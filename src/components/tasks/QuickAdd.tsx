@@ -61,6 +61,7 @@ export function QuickAdd({ open, onOpenChange }: QuickAddProps) {
       dueTime: parsed.dueTime,
       labels: parsed.labels,
       isCompleted: false,
+      recurrence: parsed.recurrence,
     });
 
     // Reset
@@ -90,7 +91,7 @@ export function QuickAdd({ open, onOpenChange }: QuickAddProps) {
 
             {/* NLP Preview */}
             <AnimatePresence>
-              {parsed && (parsed.dueDate || parsed.priority !== 4 || parsed.labels.length > 0) && (
+              {parsed && (parsed.dueDate || parsed.priority !== 4 || parsed.labels.length > 0 || parsed.recurrence) && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
@@ -116,6 +117,11 @@ export function QuickAdd({ open, onOpenChange }: QuickAddProps) {
                         style={{ color: PRIORITY_COLORS[parsed.priority] }}
                       >
                         🚩 P{parsed.priority}
+                      </span>
+                    )}
+                    {parsed.recurrence && (
+                      <span className="px-2 py-0.5 rounded bg-white/5 text-cyan-400">
+                        🔄 {parsed.recurrence.frequency}
                       </span>
                     )}
                     {parsed.labels.map((label) => (

@@ -1,4 +1,4 @@
-import { ParsedTask, Priority } from '@/types';
+import { ParsedTask, Priority, Recurrence } from '@/types';
 
 // Natural Language Processing for task input
 // Supports: dates, priorities, projects (#), labels (@)
@@ -138,6 +138,97 @@ function parsePriority(input: string): Priority | undefined {
   return undefined;
 }
 
+function parseRecurrence(input: string): { recurrence: Recurrence; dueDate: string; remaining: string } | null {
+  const dayMap: Record<string, number> = {
+    sunday: 0, sun: 0, monday: 1, mon: 1, tuesday: 2, tue: 2,
+    wednesday: 3, wed: 3, thursday: 4, thu: 4, friday: 5, fri: 5,
+    saturday: 6, sat: 6,
+  };
+
+  // "every day" / "daily"
+  const dailyMatch = input.match(/\b(?:every\s+day|daily)\b/i);
+  if (dailyMatch) {
+    const d = new Date();
+    d.setDate(d.getDate() + 1);
+    return {
+      recurrence: { frequency: 'daily', interval: 1 },
+      dueDate: d.toISOString().split('T')[0],
+      remaining: input.replace(dailyMatch[0], '').trim(),
+    };
+  }
+
+  // "every N days/weeks/months"
+  const everyNMatch = input.match(/\bevery\s+(\d+)\s+(day|week|month|year)s?\b/i);
+  if (everyNMatch) {
+    const interval = parseInt(everyNMatch[1]);
+    const unit = everyNMatch[2].toLowerCase() as 'day' | 'week' | 'month' | 'year';
+    const freq = (unit + 'ly') as 'daily' | 'weekly' | 'monthly' | 'yearly';
+    const d = new Date();
+    if (unit === 'day') d.setDate(d.getDate() + interval);
+    else if (unit === 'week') d.setDate(d.getDate() + 7 * interval);
+    else if (unit === 'month') d.setMonth(d.getMonth() + interval);
+    else if (unit === 'year') d.setFullYear(d.getFullYear() + interval);
+    return {
+      recurrence: { frequency: freq, interval },
+      dueDate: d.toISOString().split('T')[0],
+      remaining: input.replace(everyNMatch[0], '').trim(),
+    };
+  }
+
+  // "every week" / "weekly"
+  const weeklyMatch = input.match(/\b(?:every\s+week|weekly)\b/i);
+  if (weeklyMatch) {
+    const d = new Date();
+    d.setDate(d.getDate() + 7);
+    return {
+      recurrence: { frequency: 'weekly', interval: 1 },
+      dueDate: d.toISOString().split('T')[0],
+      remaining: input.replace(weeklyMatch[0], '').trim(),
+    };
+  }
+
+  // "every month" / "monthly"
+  const monthlyMatch = input.match(/\b(?:every\s+month|monthly)\b/i);
+  if (monthlyMatch) {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 1);
+    return {
+      recurrence: { frequency: 'monthly', interval: 1 },
+      dueDate: d.toISOString().split('T')[0],
+      remaining: input.replace(monthlyMatch[0], '').trim(),
+    };
+  }
+
+  // "every year" / "yearly" / "annually"
+  const yearlyMatch = input.match(/\b(?:every\s+year|yearly|annually)\b/i);
+  if (yearlyMatch) {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    return {
+      recurrence: { frequency: 'yearly', interval: 1 },
+      dueDate: d.toISOString().split('T')[0],
+      remaining: input.replace(yearlyMatch[0], '').trim(),
+    };
+  }
+
+  // "every monday", "every friday", etc.
+  const everyDayMatch = input.match(/\bevery\s+(\w+)\b/i);
+  if (everyDayMatch) {
+    const dayName = everyDayMatch[1].toLowerCase();
+    if (dayMap[dayName] !== undefined) {
+      const dayOfWeek = dayMap[dayName];
+      const d = getNextDayOfWeek(dayOfWeek);
+      return {
+        recurrence: { frequency: 'weekly', interval: 1, days: [dayOfWeek] },
+        dueDate: d.toISOString().split('T')[0],
+        remaining: input.replace(everyDayMatch[0], '').trim(),
+      };
+    }
+  }
+
+  return null;
+}
+
 export function parseTaskInput(input: string): ParsedTask {
   let content = input.trim();
   const labels: string[] = [];
@@ -145,6 +236,7 @@ export function parseTaskInput(input: string): ParsedTask {
   let dueTime: string | undefined;
   let priority: Priority | undefined;
   let projectId: string | undefined;
+  let recurrence: Recurrence | undefined;
 
   // Extract labels (@label)
   const labelMatches = content.match(/@(\w+)/g);
@@ -168,6 +260,14 @@ export function parseTaskInput(input: string): ParsedTask {
     content = content.replace(/p[1-4]/gi, '').replace(/!{1,3}/g, '').trim();
   }
 
+  // Extract recurrence (before date parsing)
+  const recurrenceResult = parseRecurrence(content);
+  if (recurrenceResult) {
+    recurrence = recurrenceResult.recurrence;
+    dueDate = recurrenceResult.dueDate;
+    content = recurrenceResult.remaining;
+  }
+
   // Extract time first (to avoid confusion with dates)
   const timeStr = parseTime(content);
   if (timeStr) {
@@ -175,7 +275,7 @@ export function parseTaskInput(input: string): ParsedTask {
     content = content.replace(/(?:at\s+)?\d{1,2}(?::\d{2})?\s*(?:am|pm)?/gi, '').trim();
   }
 
-  // Extract date patterns
+  // Extract date patterns (only if no recurrence already set a date)
   const lowerContent = content.toLowerCase();
   for (const [pattern, getDate] of Object.entries(DATE_PATTERNS)) {
     if (lowerContent.includes(pattern)) {
@@ -214,5 +314,6 @@ export function parseTaskInput(input: string): ParsedTask {
     priority: priority || 4,
     projectId,
     labels,
+    recurrence,
   };
 }

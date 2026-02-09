@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Plus,
   CornerDownRight,
+  Repeat,
 } from 'lucide-react';
 import { Task, Priority, PRIORITY_COLORS } from '@/types';
 import { useTodoStore } from '@/store';
@@ -40,9 +41,12 @@ interface TaskItemProps {
   task: Task;
   showProject?: boolean;
   isSubtask?: boolean;
+  isSelected?: boolean;
+  onToggleSelect?: () => void;
+  selectionMode?: boolean;
 }
 
-export function TaskItem({ task, showProject = false, isSubtask = false }: TaskItemProps) {
+export function TaskItem({ task, showProject = false, isSubtask = false, isSelected = false, onToggleSelect, selectionMode = false }: TaskItemProps) {
   const {
     completeTask,
     uncompleteTask,
@@ -69,21 +73,24 @@ export function TaskItem({ task, showProject = false, isSubtask = false }: TaskI
   const completedSubtasks = subtasks.filter(t => t.isCompleted).length;
 
   const handleComplete = () => {
+    if (task.isCompleted) {
+      uncompleteTask(task.id);
+      return;
+    }
     setIsCompleting(true);
     setTimeout(() => {
-      if (task.isCompleted) {
-        uncompleteTask(task.id);
-      } else {
-        completeTask(task.id);
-        toast.success(`"${task.content}" completed`, {
-          action: {
-            label: 'Undo',
-            onClick: () => undo(),
-          },
-        });
-      }
+      completeTask(task.id);
+      const msg = task.recurrence
+        ? `"${task.content}" completed — next occurrence created`
+        : `"${task.content}" completed`;
+      toast.success(msg, {
+        action: {
+          label: 'Undo',
+          onClick: () => undo(),
+        },
+      });
       setIsCompleting(false);
-    }, 300);
+    }, 400);
   };
 
   const handleDelete = () => {
@@ -125,11 +132,18 @@ export function TaskItem({ task, showProject = false, isSubtask = false }: TaskI
       <motion.div
         layout
         initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, x: -20 }}
+        animate={isCompleting
+          ? { opacity: [1, 1, 0.5], scale: [1, 1.02, 0.98], y: 0 }
+          : { opacity: 1, y: 0, scale: 1 }
+        }
+        exit={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0, overflow: 'hidden' }}
+        transition={isCompleting
+          ? { duration: 0.4, ease: 'easeOut' }
+          : { duration: 0.2 }
+        }
         className={cn(
-          'group task-item flex flex-col rounded-lg border border-transparent',
-          isCompleting && 'animate-complete'
+          'group task-item flex flex-col rounded-lg border transition-colors',
+          isSelected ? 'border-primary/40 bg-primary/5' : 'border-transparent'
         )}
       >
         <div
@@ -137,9 +151,33 @@ export function TaskItem({ task, showProject = false, isSubtask = false }: TaskI
             'flex items-start gap-3 px-3 py-3',
             isSubtask && 'pl-8'
           )}
+          onClick={(e) => {
+            if (selectionMode && onToggleSelect && !(e.target instanceof HTMLInputElement) && !(e.target instanceof HTMLButtonElement)) {
+              onToggleSelect();
+            }
+          }}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
+          {/* Selection checkbox in bulk mode */}
+          {selectionMode && onToggleSelect && !isSubtask && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleSelect(); }}
+              className={cn(
+                'mt-0.5 h-4 w-4 rounded border flex items-center justify-center transition-all shrink-0',
+                isSelected
+                  ? 'bg-primary border-primary text-white'
+                  : 'border-muted-foreground/30 hover:border-primary/50'
+              )}
+            >
+              {isSelected && (
+                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </button>
+          )}
+
           {/* Expand/Collapse for subtasks */}
           {!isSubtask && (
             <button
@@ -190,6 +228,14 @@ export function TaskItem({ task, showProject = false, isSubtask = false }: TaskI
                   <Calendar className="h-3 w-3" />
                   {dueDateLabel}
                   {task.dueTime && ` ${task.dueTime}`}
+                </span>
+              )}
+
+              {/* Recurrence indicator */}
+              {task.recurrence && (
+                <span className="flex items-center gap-1 text-xs text-cyan-400">
+                  <Repeat className="h-3 w-3" />
+                  {task.recurrence.frequency}
                 </span>
               )}
 

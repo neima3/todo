@@ -1,53 +1,98 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useTodoStore } from '@/store';
 import { Sidebar } from './Sidebar';
 import { QuickAdd } from '@/components/tasks/QuickAdd';
 import { CommandPalette } from './CommandPalette';
+import { KeyboardShortcutsDialog } from './KeyboardShortcutsDialog';
+import { toast } from 'sonner';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
 export function MainLayout({ children }: MainLayoutProps) {
-  const { sidebarOpen, quickAddOpen, setQuickAddOpen } = useTodoStore();
+  const { sidebarOpen, quickAddOpen, setQuickAddOpen, undo } = useTodoStore();
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [shortcutsOpen, setShortcutsOpen] = useState(false);
+  const router = useRouter();
+  const pendingNavKey = useRef<string | null>(null);
+  const navTimeout = useRef<ReturnType<typeof setTimeout>>();
 
-  // Keyboard shortcuts
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    const activeElement = document.activeElement;
+    const isInputFocused =
+      activeElement instanceof HTMLInputElement ||
+      activeElement instanceof HTMLTextAreaElement ||
+      activeElement?.getAttribute('contenteditable') === 'true';
+
+    // Command palette: Cmd/Ctrl + K
+    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      e.preventDefault();
+      setCommandPaletteOpen(true);
+      return;
+    }
+
+    // Undo: Cmd/Ctrl + Z (only outside inputs)
+    if ((e.metaKey || e.ctrlKey) && e.key === 'z' && !isInputFocused) {
+      e.preventDefault();
+      const action = undo();
+      if (action) {
+        toast.success('Action undone');
+      }
+      return;
+    }
+
+    // Skip other shortcuts when input is focused
+    if (isInputFocused) return;
+
+    // Quick add: Q
+    if (e.key === 'q' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      setQuickAddOpen(true);
+      return;
+    }
+
+    // Keyboard shortcuts: ?
+    if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
+      e.preventDefault();
+      setShortcutsOpen(true);
+      return;
+    }
+
+    // Navigation: G then I/T/U (vim-style two-key navigation)
+    if (e.key === 'g' && !e.metaKey && !e.ctrlKey) {
+      pendingNavKey.current = 'g';
+      if (navTimeout.current) clearTimeout(navTimeout.current);
+      navTimeout.current = setTimeout(() => { pendingNavKey.current = null; }, 500);
+      return;
+    }
+
+    if (pendingNavKey.current === 'g') {
+      pendingNavKey.current = null;
+      if (navTimeout.current) clearTimeout(navTimeout.current);
+      switch (e.key) {
+        case 'i': router.push('/'); return;
+        case 't': router.push('/today'); return;
+        case 'u': router.push('/upcoming'); return;
+      }
+    }
+
+    // Escape to close modals
+    if (e.key === 'Escape') {
+      if (shortcutsOpen) setShortcutsOpen(false);
+      else if (quickAddOpen) setQuickAddOpen(false);
+      else if (commandPaletteOpen) setCommandPaletteOpen(false);
+    }
+  }, [quickAddOpen, commandPaletteOpen, shortcutsOpen, setQuickAddOpen, undo, router]);
+
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const activeElement = document.activeElement;
-      const isInputFocused =
-        activeElement instanceof HTMLInputElement ||
-        activeElement instanceof HTMLTextAreaElement ||
-        activeElement?.getAttribute('contenteditable') === 'true';
-
-      // Command palette: Cmd/Ctrl + K
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        setCommandPaletteOpen(true);
-        return;
-      }
-
-      // Quick add: Q (only when not focused on input)
-      if (e.key === 'q' && !e.metaKey && !e.ctrlKey && !e.altKey && !isInputFocused) {
-        e.preventDefault();
-        setQuickAddOpen(true);
-        return;
-      }
-
-      // Escape to close modals
-      if (e.key === 'Escape') {
-        if (quickAddOpen) setQuickAddOpen(false);
-        if (commandPaletteOpen) setCommandPaletteOpen(false);
-      }
-    };
-
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [quickAddOpen, commandPaletteOpen, setQuickAddOpen]);
+  }, [handleKeyDown]);
 
   return (
     <div className="min-h-screen gradient-bg mesh-gradient">
@@ -73,6 +118,9 @@ export function MainLayout({ children }: MainLayoutProps) {
 
       {/* Quick Add Modal */}
       <QuickAdd open={quickAddOpen} onOpenChange={setQuickAddOpen} />
+
+      {/* Keyboard Shortcuts */}
+      <KeyboardShortcutsDialog open={shortcutsOpen} onOpenChange={setShortcutsOpen} />
     </div>
   );
 }

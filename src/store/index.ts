@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Task, Project, Label, Section, ViewType, Priority, generateId } from '@/types';
+import { Task, Project, Label, Section, ViewType, Priority, Recurrence, generateId } from '@/types';
 
 // Re-export generateId
 export { generateId } from '@/types';
@@ -76,6 +76,12 @@ interface TodoStore {
   getInboxTasks: () => Task[];
   getOverdueTasks: () => Task[];
 
+  // Bulk Actions
+  bulkComplete: (ids: string[]) => void;
+  bulkDelete: (ids: string[]) => void;
+  bulkMove: (ids: string[], projectId: string) => void;
+  bulkPriority: (ids: string[], priority: Priority) => void;
+
   // Import/Export
   exportData: () => string;
   importData: (json: string) => boolean;
@@ -84,6 +90,27 @@ interface TodoStore {
 // Generate ID helper
 function genId(): string {
   return crypto.randomUUID();
+}
+
+// Recurrence date calculator
+function getNextRecurrenceDate(currentDate: string, recurrence: Recurrence): string {
+  const date = new Date(currentDate + 'T12:00:00');
+  const { frequency, interval } = recurrence;
+  switch (frequency) {
+    case 'daily':
+      date.setDate(date.getDate() + interval);
+      break;
+    case 'weekly':
+      date.setDate(date.getDate() + 7 * interval);
+      break;
+    case 'monthly':
+      date.setMonth(date.getMonth() + interval);
+      break;
+    case 'yearly':
+      date.setFullYear(date.getFullYear() + interval);
+      break;
+  }
+  return date.toISOString().split('T')[0];
 }
 
 // Default inbox project
@@ -160,17 +187,35 @@ export const useTodoStore = create<TodoStore>()(
       completeTask: (id) => {
         const task = get().tasks.find((t) => t.id === id);
         if (task) {
+          const newTasks = get().tasks.map((t) =>
+            t.id === id
+              ? {
+                  ...t,
+                  isCompleted: true,
+                  completedAt: new Date().toISOString(),
+                  updatedAt: new Date().toISOString()
+                }
+              : t
+          );
+
+          // If recurring, create next occurrence
+          if (task.recurrence && task.dueDate) {
+            const nextDate = getNextRecurrenceDate(task.dueDate, task.recurrence);
+            const nextTask: Task = {
+              ...task,
+              id: genId(),
+              isCompleted: false,
+              completedAt: undefined,
+              dueDate: nextDate,
+              order: task.order + 0.5,
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            };
+            newTasks.push(nextTask);
+          }
+
           set({
-            tasks: get().tasks.map((t) =>
-              t.id === id
-                ? {
-                    ...t,
-                    isCompleted: true,
-                    completedAt: new Date().toISOString(),
-                    updatedAt: new Date().toISOString()
-                  }
-                : t
-            ),
+            tasks: newTasks,
             undoStack: [...get().undoStack, { type: 'COMPLETE_TASK', task }],
           });
         }
@@ -465,6 +510,39 @@ export const useTodoStore = create<TodoStore>()(
       },
 
       clearUndoStack: () => set({ undoStack: [] }),
+
+      // Bulk Actions
+      bulkComplete: (ids) => {
+        set({
+          tasks: get().tasks.map((t) =>
+            ids.includes(t.id)
+              ? { ...t, isCompleted: true, completedAt: new Date().toISOString(), updatedAt: new Date().toISOString() }
+              : t
+          ),
+        });
+      },
+
+      bulkDelete: (ids) => {
+        set({
+          tasks: get().tasks.filter((t) => !ids.includes(t.id)),
+        });
+      },
+
+      bulkMove: (ids, projectId) => {
+        set({
+          tasks: get().tasks.map((t) =>
+            ids.includes(t.id) ? { ...t, projectId, updatedAt: new Date().toISOString() } : t
+          ),
+        });
+      },
+
+      bulkPriority: (ids, priority) => {
+        set({
+          tasks: get().tasks.map((t) =>
+            ids.includes(t.id) ? { ...t, priority, updatedAt: new Date().toISOString() } : t
+          ),
+        });
+      },
 
       // Import/Export
       exportData: () => {

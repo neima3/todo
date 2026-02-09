@@ -1,14 +1,37 @@
 'use client';
 
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Inbox, Plus, Sparkles } from 'lucide-react';
 import { useTodoStore } from '@/store';
 import { TaskList } from '@/components/tasks/TaskList';
+import { TaskFilter, TaskFilterState } from '@/components/tasks/TaskFilter';
 import { Button } from '@/components/ui/button';
 
 export default function InboxPage() {
   const { tasks, setQuickAddOpen } = useTodoStore();
+  const [filter, setFilter] = useState<TaskFilterState>({ search: '', priority: null });
+
   const inboxTasks = tasks.filter((t) => t.projectId === 'inbox');
+
+  const filteredTasks = useMemo(() => {
+    let result = inboxTasks;
+    if (filter.search) {
+      const q = filter.search.toLowerCase();
+      result = result.filter(t =>
+        t.content.toLowerCase().includes(q) ||
+        t.labels.some(l => l.toLowerCase().includes(q)) ||
+        t.description?.toLowerCase().includes(q)
+      );
+    }
+    if (filter.priority) {
+      result = result.filter(t => t.priority === filter.priority);
+    }
+    return result;
+  }, [inboxTasks, filter]);
+
+  const activeCount = filteredTasks.filter(t => !t.isCompleted).length;
+  const hasActiveFilters = filter.search !== '' || filter.priority !== null;
 
   return (
     <div>
@@ -16,9 +39,9 @@ export default function InboxPage() {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
+        className="mb-6"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
               <Inbox className="h-5 w-5 text-blue-400" />
@@ -35,6 +58,11 @@ export default function InboxPage() {
             Add task
           </Button>
         </div>
+
+        <TaskFilter
+          onFilterChange={setFilter}
+          taskCount={hasActiveFilters ? activeCount : undefined}
+        />
       </motion.div>
 
       {/* Tasks */}
@@ -67,7 +95,7 @@ export default function InboxPage() {
             </Button>
           </div>
         ) : (
-          <TaskList tasks={inboxTasks} projectId="inbox" />
+          <TaskList tasks={filteredTasks} projectId="inbox" />
         )}
       </motion.div>
     </div>

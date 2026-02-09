@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Inbox,
@@ -72,6 +72,8 @@ export function Sidebar() {
   const [labelsExpanded, setLabelsExpanded] = useState(true);
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [labelDialogOpen, setLabelDialogOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
+  useEffect(() => { setHasMounted(true); }, []);
 
   const handleExport = () => {
     const data = exportData();
@@ -107,8 +109,8 @@ export function Sidebar() {
     input.click();
   };
 
-  const todayCount = getTodayTasks().length;
-  const inboxCount = getInboxTasks().length;
+  const todayCount = hasMounted ? getTodayTasks().length : 0;
+  const inboxCount = hasMounted ? getInboxTasks().length : 0;
   const userProjects = projects.filter((p) => p.id !== 'inbox');
 
   return (

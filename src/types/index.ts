@@ -1,5 +1,13 @@
 export type Priority = 1 | 2 | 3 | 4;
 
+export type RecurrenceFrequency = 'daily' | 'weekly' | 'monthly' | 'yearly';
+
+export interface Recurrence {
+  frequency: RecurrenceFrequency;
+  interval: number; // e.g., every 2 weeks
+  days?: number[]; // for weekly: 0=Sun, 1=Mon, etc.
+}
+
 export function generateId(): string {
   return crypto.randomUUID();
 }
@@ -20,7 +28,8 @@ export interface Task {
   completedAt?: string;
   createdAt: string;
   updatedAt: string;
-  isExpanded?: boolean; // For subtask visibility
+  isExpanded?: boolean;
+  recurrence?: Recurrence;
 }
 
 export interface Project {
@@ -69,6 +78,7 @@ export interface ParsedTask {
   priority?: Priority;
   projectId?: string;
   labels: string[];
+  recurrence?: Recurrence;
 }
 
 export const PRIORITY_COLORS: Record<Priority, string> = {
