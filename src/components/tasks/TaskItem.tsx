@@ -34,6 +34,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { TaskEditDialog } from './TaskEditDialog';
+import { toast } from 'sonner';
 
 interface TaskItemProps {
   task: Task;
@@ -52,7 +53,8 @@ export function TaskItem({ task, showProject = false, isSubtask = false }: TaskI
     addSubtask,
     toggleTaskExpanded,
     getSubtasks,
-    tasks
+    tasks,
+    undo,
   } = useTodoStore();
   const [isCompleting, setIsCompleting] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -73,9 +75,25 @@ export function TaskItem({ task, showProject = false, isSubtask = false }: TaskI
         uncompleteTask(task.id);
       } else {
         completeTask(task.id);
+        toast.success(`"${task.content}" completed`, {
+          action: {
+            label: 'Undo',
+            onClick: () => undo(),
+          },
+        });
       }
       setIsCompleting(false);
     }, 300);
+  };
+
+  const handleDelete = () => {
+    deleteTask(task.id);
+    toast.success(`"${task.content}" deleted`, {
+      action: {
+        label: 'Undo',
+        onClick: () => undo(),
+      },
+    });
   };
 
   const handlePriorityChange = (priority: Priority) => {
@@ -318,7 +336,7 @@ export function TaskItem({ task, showProject = false, isSubtask = false }: TaskI
                     <DropdownMenuSeparator />
 
                     <DropdownMenuItem
-                      onClick={() => deleteTask(task.id)}
+                      onClick={handleDelete}
                       className="text-red-500 focus:text-red-500"
                     >
                       <Trash2 className="h-4 w-4 mr-2" />

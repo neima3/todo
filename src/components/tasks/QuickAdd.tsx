@@ -11,9 +11,10 @@ import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 import {
   Popover,
   PopoverContent,
@@ -72,6 +73,10 @@ export function QuickAdd({ open, onOpenChange }: QuickAddProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px] gap-0 p-0 overflow-hidden">
+        <VisuallyHidden.Root>
+          <DialogTitle>Quick Add Task</DialogTitle>
+          <DialogDescription>Add a new task with natural language support</DialogDescription>
+        </VisuallyHidden.Root>
         <form onSubmit={handleSubmit}>
           <div className="p-4 border-b border-white/5">
             <input

@@ -5,12 +5,21 @@ import { Task, Project, Label, Section, ViewType, Priority, generateId } from '@
 // Re-export generateId
 export { generateId } from '@/types';
 
+// Undo action types
+type UndoAction =
+  | { type: 'COMPLETE_TASK'; task: Task }
+  | { type: 'DELETE_TASK'; task: Task }
+  | { type: 'DELETE_PROJECT'; project: Project; tasks: Task[]; sections: Section[] };
+
 interface TodoStore {
   // Data
   tasks: Task[];
   projects: Project[];
   labels: Label[];
   sections: Section[];
+
+  // Undo stack
+  undoStack: UndoAction[];
 
   // UI State
   currentView: ViewType;
@@ -30,6 +39,10 @@ interface TodoStore {
   addSubtask: (parentId: string, content: string) => void;
   toggleTaskExpanded: (id: string) => void;
   getSubtasks: (parentId: string) => Task[];
+
+  // Undo Actions
+  undo: () => UndoAction | null;
+  clearUndoStack: () => void;
 
   // Project Actions
   addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'order'>) => void;
@@ -62,6 +75,10 @@ interface TodoStore {
   getUpcomingTasks: () => Task[];
   getInboxTasks: () => Task[];
   getOverdueTasks: () => Task[];
+
+  // Import/Export
+  exportData: () => string;
+  importData: (json: string) => boolean;
 }
 
 // Generate ID helper
@@ -89,6 +106,9 @@ export const useTodoStore = create<TodoStore>()(
       projects: [INBOX_PROJECT],
       labels: [],
       sections: [],
+
+      // Undo stack
+      undoStack: [],
 
       // Initial UI State
       currentView: 'inbox',
@@ -127,25 +147,33 @@ export const useTodoStore = create<TodoStore>()(
       },
 
       deleteTask: (id) => {
-        set({
-          tasks: get().tasks.filter((task) => task.id !== id),
-          selectedTaskId: get().selectedTaskId === id ? null : get().selectedTaskId
-        });
+        const task = get().tasks.find((t) => t.id === id);
+        if (task) {
+          set({
+            tasks: get().tasks.filter((t) => t.id !== id),
+            selectedTaskId: get().selectedTaskId === id ? null : get().selectedTaskId,
+            undoStack: [...get().undoStack, { type: 'DELETE_TASK', task }],
+          });
+        }
       },
 
       completeTask: (id) => {
-        set({
-          tasks: get().tasks.map((task) =>
-            task.id === id
-              ? {
-                  ...task,
-                  isCompleted: true,
-                  completedAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString()
-                }
-              : task
-          ),
-        });
+        const task = get().tasks.find((t) => t.id === id);
+        if (task) {
+          set({
+            tasks: get().tasks.map((t) =>
+              t.id === id
+                ? {
+                    ...t,
+                    isCompleted: true,
+                    completedAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                  }
+                : t
+            ),
+            undoStack: [...get().undoStack, { type: 'COMPLETE_TASK', task }],
+          });
+        }
       },
 
       uncompleteTask: (id) => {
@@ -396,6 +424,70 @@ export const useTodoStore = create<TodoStore>()(
             const dateB = new Date(b.dueDate!);
             return dateA.getTime() - dateB.getTime();
           });
+      },
+
+      // Undo Actions
+      undo: () => {
+        const stack = get().undoStack;
+        if (stack.length === 0) return null;
+
+        const action = stack[stack.length - 1];
+        const newStack = stack.slice(0, -1);
+
+        switch (action.type) {
+          case 'COMPLETE_TASK':
+            set({
+              tasks: get().tasks.map((t) =>
+                t.id === action.task.id
+                  ? { ...t, isCompleted: false, completedAt: undefined }
+                  : t
+              ),
+              undoStack: newStack,
+            });
+            break;
+          case 'DELETE_TASK':
+            set({
+              tasks: [...get().tasks, action.task],
+              undoStack: newStack,
+            });
+            break;
+          case 'DELETE_PROJECT':
+            set({
+              projects: [...get().projects, action.project],
+              tasks: [...get().tasks, ...action.tasks],
+              sections: [...get().sections, ...action.sections],
+              undoStack: newStack,
+            });
+            break;
+        }
+
+        return action;
+      },
+
+      clearUndoStack: () => set({ undoStack: [] }),
+
+      // Import/Export
+      exportData: () => {
+        const { tasks, projects, labels, sections } = get();
+        return JSON.stringify({ tasks, projects, labels, sections }, null, 2);
+      },
+
+      importData: (json: string) => {
+        try {
+          const data = JSON.parse(json);
+          if (data.tasks && data.projects) {
+            set({
+              tasks: data.tasks || [],
+              projects: data.projects.length > 0 ? data.projects : [INBOX_PROJECT],
+              labels: data.labels || [],
+              sections: data.sections || [],
+            });
+            return true;
+          }
+          return false;
+        } catch {
+          return false;
+        }
       },
     }),
     {

@@ -1,7 +1,50 @@
 @import "tailwindcss";
 
-/* Todoist Dark Theme */
-:root {
+/* Light Theme */
+.light {
+  --background: #fafafa;
+  --foreground: #1a1a2e;
+
+  --card: #ffffff;
+  --card-foreground: #1a1a2e;
+
+  --popover: #ffffff;
+  --popover-foreground: #1a1a2e;
+
+  --primary: #de4c4a;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f3f4f6;
+  --secondary-foreground: #1a1a2e;
+
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+
+  --accent: #f3f4f6;
+  --accent-foreground: #1a1a2e;
+
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --border: rgba(0, 0, 0, 0.1);
+  --input: rgba(0, 0, 0, 0.1);
+  --ring: #de4c4a;
+
+  --radius: 0.75rem;
+
+  /* Priority colors */
+  --priority-1: #dc2626;
+  --priority-2: #f97316;
+  --priority-3: #3b82f6;
+  --priority-4: #6b7280;
+
+  /* Sidebar */
+  --sidebar-width: 280px;
+  --sidebar-collapsed-width: 0px;
+}
+
+/* Dark Theme (default) */
+.dark, :root {
   --background: #1a1a2e;
   --foreground: #eaeaea;
 
@@ -105,21 +148,37 @@ body {
   background: transparent;
 }
 
-::-webkit-scrollbar-thumb {
+.dark ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.dark ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.25);
 }
 
+.light ::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.light ::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+
 /* Glass morphism utility */
-.glass {
+.dark .glass {
   background: rgba(22, 22, 42, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.light .glass {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 /* Focus visible ring */
@@ -133,16 +192,27 @@ body {
 }
 
 /* Gradient background */
-.gradient-bg {
+.dark .gradient-bg {
   background: linear-gradient(135deg, #1a1a2e 0%, #16162a 50%, #1a1a2e 100%);
 }
 
+.light .gradient-bg {
+  background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 50%, #fafafa 100%);
+}
+
 /* Subtle gradient mesh */
-.mesh-gradient {
+.dark .mesh-gradient {
   background-image:
     radial-gradient(at 40% 20%, rgba(222, 76, 74, 0.1) 0px, transparent 50%),
     radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.08) 0px, transparent 50%),
     radial-gradient(at 0% 50%, rgba(139, 92, 246, 0.08) 0px, transparent 50%);
+}
+
+.light .mesh-gradient {
+  background-image:
+    radial-gradient(at 40% 20%, rgba(222, 76, 74, 0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(59, 130, 246, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(139, 92, 246, 0.05) 0px, transparent 50%);
 }
 
 /* Glow effect for primary button */
@@ -155,8 +225,12 @@ body {
   transition: all 0.2s ease;
 }
 
-.task-item:hover {
+.dark .task-item:hover {
   background: rgba(255, 255, 255, 0.03);
+}
+
+.light .task-item:hover {
+  background: rgba(0, 0, 0, 0.02);
 }
 
 /* Completion animation */
@@ -194,5 +268,12 @@ body {
 /* Selection color */
 ::selection {
   background-color: rgba(222, 76, 74, 0.3);
-  color: white;
+  color: inherit;
+}
+
+/* Sonner toast overrides */
+[data-sonner-toast] {
+  --normal-bg: var(--card) !important;
+  --normal-border: var(--border) !important;
+  --normal-text: var(--foreground) !important;
 }

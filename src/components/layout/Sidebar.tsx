@@ -11,10 +11,11 @@ import {
   Plus,
   ChevronDown,
   ChevronRight,
-  MoreHorizontal,
   Menu,
   Settings,
   HelpCircle,
+  Download,
+  Upload,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -32,6 +33,8 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import { ProjectDialog } from '@/components/projects/ProjectDialog';
 import { LabelDialog } from '@/components/labels/LabelDialog';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { toast } from 'sonner';
 
 interface NavItemProps {
   href: string;
@@ -64,11 +67,45 @@ function NavItem({ href, icon, label, count, isActive, color }: NavItemProps) {
 
 export function Sidebar() {
   const pathname = usePathname();
-  const { projects, labels, sidebarOpen, toggleSidebar, getTodayTasks, getInboxTasks } = useTodoStore();
+  const { projects, labels, sidebarOpen, toggleSidebar, getTodayTasks, getInboxTasks, exportData, importData } = useTodoStore();
   const [projectsExpanded, setProjectsExpanded] = useState(true);
   const [labelsExpanded, setLabelsExpanded] = useState(true);
   const [projectDialogOpen, setProjectDialogOpen] = useState(false);
   const [labelDialogOpen, setLabelDialogOpen] = useState(false);
+
+  const handleExport = () => {
+    const data = exportData();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `todoist-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Data exported successfully');
+  };
+
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const result = ev.target?.result as string;
+          if (importData(result)) {
+            toast.success('Data imported successfully');
+          } else {
+            toast.error('Failed to import data. Invalid format.');
+          }
+        };
+        reader.readAsText(file);
+      }
+    };
+    input.click();
+  };
 
   const todayCount = getTodayTasks().length;
   const inboxCount = getInboxTasks().length;
@@ -136,23 +173,22 @@ export function Sidebar() {
 
                 {/* Projects Section */}
                 <div className="mt-6">
-                  <button
-                    onClick={() => setProjectsExpanded(!projectsExpanded)}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-white transition-colors"
-                  >
-                    {projectsExpanded ? (
-                      <ChevronDown className="h-3 w-3" />
-                    ) : (
-                      <ChevronRight className="h-3 w-3" />
-                    )}
-                    <span className="flex-1 text-left">Projects</span>
+                  <div className="group flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <button
+                      onClick={() => setProjectsExpanded(!projectsExpanded)}
+                      className="flex flex-1 items-center gap-2 hover:text-white transition-colors"
+                    >
+                      {projectsExpanded ? (
+                        <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ChevronRight className="h-3 w-3" />
+                      )}
+                      <span className="flex-1 text-left">Projects</span>
+                    </button>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setProjectDialogOpen(true);
-                          }}
+                          onClick={() => setProjectDialogOpen(true)}
                           className="opacity-0 group-hover:opacity-100 hover:text-primary p-1 rounded"
                         >
                           <Plus className="h-3 w-3" />
@@ -160,7 +196,7 @@ export function Sidebar() {
                       </TooltipTrigger>
                       <TooltipContent>Add project</TooltipContent>
                     </Tooltip>
-                  </button>
+                  </div>
                   <AnimatePresence>
                     {projectsExpanded && (
                       <motion.div
@@ -196,23 +232,22 @@ export function Sidebar() {
 
                 {/* Labels Section */}
                 <div className="mt-6">
-                  <button
-                    onClick={() => setLabelsExpanded(!labelsExpanded)}
-                    className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-white transition-colors"
-                  >
-                    {labelsExpanded ? (
-                      <ChevronDown className="h-3 w-3" />
-                    ) : (
-                      <ChevronRight className="h-3 w-3" />
-                    )}
-                    <span className="flex-1 text-left">Labels</span>
+                  <div className="group flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                    <button
+                      onClick={() => setLabelsExpanded(!labelsExpanded)}
+                      className="flex flex-1 items-center gap-2 hover:text-white transition-colors"
+                    >
+                      {labelsExpanded ? (
+                        <ChevronDown className="h-3 w-3" />
+                      ) : (
+                        <ChevronRight className="h-3 w-3" />
+                      )}
+                      <span className="flex-1 text-left">Labels</span>
+                    </button>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setLabelDialogOpen(true);
-                          }}
+                          onClick={() => setLabelDialogOpen(true)}
                           className="opacity-0 group-hover:opacity-100 hover:text-primary p-1 rounded"
                         >
                           <Plus className="h-3 w-3" />
@@ -220,7 +255,7 @@ export function Sidebar() {
                       </TooltipTrigger>
                       <TooltipContent>Add label</TooltipContent>
                     </Tooltip>
-                  </button>
+                  </div>
                   <AnimatePresence>
                     {labelsExpanded && (
                       <motion.div
@@ -258,13 +293,40 @@ export function Sidebar() {
               {/* Footer */}
               <div className="border-t border-white/5 p-2">
                 <div className="flex gap-1">
+                  <ThemeToggle />
+                  <DropdownMenu>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="flex-1 text-muted-foreground hover:text-foreground"
+                          >
+                            <Settings className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                      </TooltipTrigger>
+                      <TooltipContent>Settings</TooltipContent>
+                    </Tooltip>
+                    <DropdownMenuContent align="start" side="top">
+                      <DropdownMenuItem onClick={handleExport}>
+                        <Download className="h-4 w-4 mr-2" />
+                        Export data
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={handleImport}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Import data
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
                         size="icon"
                         asChild
-                        className="flex-1 text-muted-foreground hover:text-white"
+                        className="flex-1 text-muted-foreground hover:text-foreground"
                       >
                         <Link href="/help">
                           <HelpCircle className="h-4 w-4" />

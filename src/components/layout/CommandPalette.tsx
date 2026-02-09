@@ -22,7 +22,10 @@ import { getDueDateLabel, getDueDateColor } from '@/lib/utils';
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
+import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
 
 interface CommandPaletteProps {
   open: boolean;
@@ -234,6 +237,10 @@ export function CommandPalette({ open, onOpenChange, onQuickAdd }: CommandPalett
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden">
+        <VisuallyHidden.Root>
+          <DialogTitle>Command Palette</DialogTitle>
+          <DialogDescription>Search tasks, navigate, or take action</DialogDescription>
+        </VisuallyHidden.Root>
         {/* Search input */}
         <div className="flex items-center gap-3 p-4 border-b border-white/5">
           <Search className="h-5 w-5 text-muted-foreground" />
