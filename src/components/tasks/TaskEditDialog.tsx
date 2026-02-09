@@ -19,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 
 interface TaskEditDialogProps {
   task: Task;
@@ -103,12 +104,35 @@ export function TaskEditDialog({ task, open, onOpenChange }: TaskEditDialogProps
               <label className="text-xs text-muted-foreground mb-1.5 block">
                 Due date
               </label>
-              <Input
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="text-sm"
-              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={cn(
+                      'w-full justify-start text-left font-normal h-9',
+                      !dueDate && 'text-muted-foreground'
+                    )}
+                  >
+                    <Calendar className="mr-2 h-4 w-4" />
+                    {dueDate
+                      ? new Date(dueDate).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })
+                      : 'Pick a date'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[280px] p-0" align="start">
+                  <CalendarPicker
+                    selected={dueDate ? new Date(dueDate) : undefined}
+                    onSelect={(date) => {
+                      setDueDate(date ? date.toISOString().split('T')[0] : '');
+                    }}
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="w-32">
               <label className="text-xs text-muted-foreground mb-1.5 block">

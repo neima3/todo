@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Calendar,
@@ -10,8 +10,11 @@ import {
   Pencil,
   Trash2,
   ArrowRight,
-  Copy,
   Hash,
+  ChevronRight,
+  ChevronDown,
+  Plus,
+  CornerDownRight,
 } from 'lucide-react';
 import { Task, Priority, PRIORITY_COLORS } from '@/types';
 import { useTodoStore } from '@/store';
@@ -19,6 +22,7 @@ import { cn } from '@/lib/utils';
 import { getDueDateColor, getDueDateLabel } from '@/lib/utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,15 +38,33 @@ import { TaskEditDialog } from './TaskEditDialog';
 interface TaskItemProps {
   task: Task;
   showProject?: boolean;
+  isSubtask?: boolean;
 }
 
-export function TaskItem({ task, showProject = false }: TaskItemProps) {
-  const { completeTask, uncompleteTask, deleteTask, updateTask, projects, labels: storeLabels } = useTodoStore();
+export function TaskItem({ task, showProject = false, isSubtask = false }: TaskItemProps) {
+  const {
+    completeTask,
+    uncompleteTask,
+    deleteTask,
+    updateTask,
+    projects,
+    labels: storeLabels,
+    addSubtask,
+    toggleTaskExpanded,
+    getSubtasks,
+    tasks
+  } = useTodoStore();
   const [isCompleting, setIsCompleting] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [isAddingSubtask, setIsAddingSubtask] = useState(false);
+  const [subtaskContent, setSubtaskContent] = useState('');
+  const subtaskInputRef = useRef<HTMLInputElement>(null);
 
   const project = projects.find((p) => p.id === task.projectId);
+  const subtasks = tasks.filter(t => t.parentId === task.id);
+  const hasSubtasks = subtasks.length > 0;
+  const completedSubtasks = subtasks.filter(t => t.isCompleted).length;
 
   const handleComplete = () => {
     setIsCompleting(true);
@@ -64,6 +86,19 @@ export function TaskItem({ task, showProject = false }: TaskItemProps) {
     updateTask(task.id, { projectId });
   };
 
+  const handleAddSubtask = () => {
+    if (!subtaskContent.trim()) return;
+    addSubtask(task.id, subtaskContent.trim());
+    setSubtaskContent('');
+    setIsAddingSubtask(false);
+  };
+
+  const handleToggleExpanded = () => {
+    if (hasSubtasks || isAddingSubtask) {
+      toggleTaskExpanded(task.id);
+    }
+  };
+
   const dueDateLabel = getDueDateLabel(task.dueDate);
   const dueDateColor = getDueDateColor(task.dueDate);
 
@@ -75,168 +110,292 @@ export function TaskItem({ task, showProject = false }: TaskItemProps) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, x: -20 }}
         className={cn(
-          'group task-item flex items-start gap-3 px-3 py-3 rounded-lg border border-transparent',
+          'group task-item flex flex-col rounded-lg border border-transparent',
           isCompleting && 'animate-complete'
         )}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Checkbox */}
-        <div className="pt-0.5">
-          <Checkbox
-            checked={task.isCompleted}
-            onCheckedChange={handleComplete}
-            priority={task.priority}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0">
-          <p
-            className={cn(
-              'text-sm leading-relaxed transition-all duration-200',
-              task.isCompleted && 'line-through text-muted-foreground'
-            )}
-          >
-            {task.content}
-          </p>
-
-          {/* Meta info */}
-          <div className="flex flex-wrap items-center gap-2 mt-1.5">
-            {/* Due date */}
-            {task.dueDate && (
-              <span className={cn('flex items-center gap-1 text-xs', dueDateColor)}>
-                <Calendar className="h-3 w-3" />
-                {dueDateLabel}
-                {task.dueTime && ` ${task.dueTime}`}
-              </span>
-            )}
-
-            {/* Project badge */}
-            {showProject && project && project.id !== 'inbox' && (
-              <span
-                className="flex items-center gap-1 text-xs text-muted-foreground"
-                style={{ color: project.color }}
-              >
-                <Hash className="h-3 w-3" />
-                {project.name}
-              </span>
-            )}
-
-            {/* Labels */}
-            {task.labels.length > 0 && (
-              <div className="flex items-center gap-1">
-                {task.labels.map((labelName) => {
-                  const label = storeLabels.find((l) => l.name === labelName);
-                  return (
-                    <span
-                      key={labelName}
-                      className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-md bg-white/5"
-                      style={{ color: label?.color || '#9898a6' }}
-                    >
-                      <Tag className="h-2.5 w-2.5" />
-                      {labelName}
-                    </span>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Actions */}
-        <AnimatePresence>
-          {isHovered && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="flex items-center gap-1"
+        <div
+          className={cn(
+            'flex items-start gap-3 px-3 py-3',
+            isSubtask && 'pl-8'
+          )}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          {/* Expand/Collapse for subtasks */}
+          {!isSubtask && (
+            <button
+              onClick={handleToggleExpanded}
+              className={cn(
+                'mt-0.5 p-0.5 rounded transition-colors',
+                hasSubtasks ? 'hover:bg-white/10 text-muted-foreground' : 'invisible'
+              )}
             >
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => setEditDialogOpen(true)}
-                className="text-muted-foreground hover:text-white"
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
+              {task.isExpanded ? (
+                <ChevronDown className="h-3.5 w-3.5" />
+              ) : (
+                <ChevronRight className="h-3.5 w-3.5" />
+              )}
+            </button>
+          )}
 
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+          {/* Subtask indicator */}
+          {isSubtask && (
+            <CornerDownRight className="h-3 w-3 text-muted-foreground/50 mt-1 -ml-2" />
+          )}
+
+          {/* Checkbox */}
+          <div className="pt-0.5">
+            <Checkbox
+              checked={task.isCompleted}
+              onCheckedChange={handleComplete}
+              priority={task.priority}
+            />
+          </div>
+
+          {/* Content */}
+          <div className="flex-1 min-w-0">
+            <p
+              className={cn(
+                'text-sm leading-relaxed transition-all duration-200',
+                task.isCompleted && 'line-through text-muted-foreground'
+              )}
+            >
+              {task.content}
+            </p>
+
+            {/* Meta info */}
+            <div className="flex flex-wrap items-center gap-2 mt-1.5">
+              {/* Due date */}
+              {task.dueDate && (
+                <span className={cn('flex items-center gap-1 text-xs', dueDateColor)}>
+                  <Calendar className="h-3 w-3" />
+                  {dueDateLabel}
+                  {task.dueTime && ` ${task.dueTime}`}
+                </span>
+              )}
+
+              {/* Subtask count */}
+              {hasSubtasks && !isSubtask && (
+                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <CornerDownRight className="h-3 w-3" />
+                  {completedSubtasks}/{subtasks.length}
+                </span>
+              )}
+
+              {/* Project badge */}
+              {showProject && project && project.id !== 'inbox' && (
+                <span
+                  className="flex items-center gap-1 text-xs text-muted-foreground"
+                  style={{ color: project.color }}
+                >
+                  <Hash className="h-3 w-3" />
+                  {project.name}
+                </span>
+              )}
+
+              {/* Labels */}
+              {task.labels.length > 0 && (
+                <div className="flex items-center gap-1">
+                  {task.labels.map((labelName) => {
+                    const label = storeLabels.find((l) => l.name === labelName);
+                    return (
+                      <span
+                        key={labelName}
+                        className="flex items-center gap-1 text-xs px-1.5 py-0.5 rounded-md bg-white/5"
+                        style={{ color: label?.color || '#9898a6' }}
+                      >
+                        <Tag className="h-2.5 w-2.5" />
+                        {labelName}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <AnimatePresence>
+            {isHovered && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="flex items-center gap-1"
+              >
+                {!isSubtask && (
                   <Button
                     variant="ghost"
                     size="icon-sm"
+                    onClick={() => setIsAddingSubtask(true)}
                     className="text-muted-foreground hover:text-white"
+                    title="Add subtask"
                   >
-                    <MoreHorizontal className="h-3.5 w-3.5" />
+                    <Plus className="h-3.5 w-3.5" />
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
-                  <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
-                    <Pencil className="h-4 w-4 mr-2" />
-                    Edit task
-                  </DropdownMenuItem>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={() => setEditDialogOpen(true)}
+                  className="text-muted-foreground hover:text-white"
+                >
+                  <Pencil className="h-3.5 w-3.5" />
+                </Button>
 
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <Flag className="h-4 w-4 mr-2" />
-                      Priority
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      {([1, 2, 3, 4] as Priority[]).map((p) => (
-                        <DropdownMenuItem
-                          key={p}
-                          onClick={() => handlePriorityChange(p)}
-                        >
-                          <Flag
-                            className="h-4 w-4 mr-2"
-                            style={{ color: PRIORITY_COLORS[p] }}
-                          />
-                          Priority {p}
-                          {task.priority === p && (
-                            <span className="ml-auto text-xs">✓</span>
-                          )}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="text-muted-foreground hover:text-white"
+                    >
+                      <MoreHorizontal className="h-3.5 w-3.5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
+                      <Pencil className="h-4 w-4 mr-2" />
+                      Edit task
+                    </DropdownMenuItem>
 
-                  <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>
-                      <ArrowRight className="h-4 w-4 mr-2" />
-                      Move to...
-                    </DropdownMenuSubTrigger>
-                    <DropdownMenuSubContent>
-                      {projects.map((p) => (
-                        <DropdownMenuItem
-                          key={p.id}
-                          onClick={() => handleMoveToProject(p.id)}
-                        >
-                          <Hash
-                            className="h-4 w-4 mr-2"
-                            style={{ color: p.color }}
-                          />
-                          {p.name}
-                          {task.projectId === p.id && (
-                            <span className="ml-auto text-xs">✓</span>
-                          )}
-                        </DropdownMenuItem>
-                      ))}
-                    </DropdownMenuSubContent>
-                  </DropdownMenuSub>
+                    {!isSubtask && (
+                      <DropdownMenuItem onClick={() => setIsAddingSubtask(true)}>
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add subtask
+                      </DropdownMenuItem>
+                    )}
 
-                  <DropdownMenuSeparator />
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <Flag className="h-4 w-4 mr-2" />
+                        Priority
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        {([1, 2, 3, 4] as Priority[]).map((p) => (
+                          <DropdownMenuItem
+                            key={p}
+                            onClick={() => handlePriorityChange(p)}
+                          >
+                            <Flag
+                              className="h-4 w-4 mr-2"
+                              style={{ color: PRIORITY_COLORS[p] }}
+                            />
+                            Priority {p}
+                            {task.priority === p && (
+                              <span className="ml-auto text-xs">✓</span>
+                            )}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
 
-                  <DropdownMenuItem
-                    onClick={() => deleteTask(task.id)}
-                    className="text-red-500 focus:text-red-500"
+                    <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>
+                        <ArrowRight className="h-4 w-4 mr-2" />
+                        Move to...
+                      </DropdownMenuSubTrigger>
+                      <DropdownMenuSubContent>
+                        {projects.map((p) => (
+                          <DropdownMenuItem
+                            key={p.id}
+                            onClick={() => handleMoveToProject(p.id)}
+                          >
+                            <Hash
+                              className="h-4 w-4 mr-2"
+                              style={{ color: p.color }}
+                            />
+                            {p.name}
+                            {task.projectId === p.id && (
+                              <span className="ml-auto text-xs">✓</span>
+                            )}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuSubContent>
+                    </DropdownMenuSub>
+
+                    <DropdownMenuSeparator />
+
+                    <DropdownMenuItem
+                      onClick={() => deleteTask(task.id)}
+                      className="text-red-500 focus:text-red-500"
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete task
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Subtasks */}
+        <AnimatePresence>
+          {(task.isExpanded || isAddingSubtask) && !isSubtask && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="pl-6 border-l-2 border-white/5 ml-5 mb-2">
+                {/* Existing subtasks */}
+                {subtasks.map((subtask) => (
+                  <TaskItem
+                    key={subtask.id}
+                    task={subtask}
+                    showProject={showProject}
+                    isSubtask
+                  />
+                ))}
+
+                {/* Add subtask input */}
+                {isAddingSubtask && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center gap-2 px-3 py-2 pl-8"
                   >
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete task
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    <CornerDownRight className="h-3 w-3 text-muted-foreground/50 -ml-2" />
+                    <Input
+                      ref={subtaskInputRef}
+                      value={subtaskContent}
+                      onChange={(e) => setSubtaskContent(e.target.value)}
+                      placeholder="Add subtask..."
+                      className="flex-1 h-8 text-sm bg-transparent border-white/10"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleAddSubtask();
+                        if (e.key === 'Escape') {
+                          setIsAddingSubtask(false);
+                          setSubtaskContent('');
+                        }
+                      }}
+                    />
+                    <Button
+                      size="sm"
+                      className="h-7"
+                      onClick={handleAddSubtask}
+                      disabled={!subtaskContent.trim()}
+                    >
+                      Add
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      className="h-7"
+                      onClick={() => {
+                        setIsAddingSubtask(false);
+                        setSubtaskContent('');
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </motion.div>
+                )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

@@ -20,6 +20,7 @@ export interface Task {
   completedAt?: string;
   createdAt: string;
   updatedAt: string;
+  isExpanded?: boolean; // For subtask visibility
 }
 
 export interface Project {

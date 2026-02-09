@@ -20,8 +20,10 @@ export function TaskList({
   emptyMessage = 'No tasks yet',
   showAddTask = true,
 }: TaskListProps) {
-  const activeTasks = tasks.filter((t) => !t.isCompleted);
-  const completedTasks = tasks.filter((t) => t.isCompleted);
+  // Filter out subtasks - they render within their parent TaskItem
+  const rootTasks = tasks.filter((t) => !t.parentId);
+  const activeTasks = rootTasks.filter((t) => !t.isCompleted);
+  const completedTasks = rootTasks.filter((t) => t.isCompleted);
 
   return (
     <div className="space-y-1">

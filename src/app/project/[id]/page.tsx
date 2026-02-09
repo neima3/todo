@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useParams, notFound } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { Hash, Plus, MoreHorizontal, Pencil, Trash2, FolderOpen } from 'lucide-react';
+import { Hash, Plus, MoreHorizontal, Pencil, Trash2, FolderOpen, LayoutList } from 'lucide-react';
 import { useTodoStore } from '@/store';
 import { TaskList } from '@/components/tasks/TaskList';
+import { SectionList } from '@/components/projects/SectionList';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -19,11 +20,13 @@ import { ProjectDialog } from '@/components/projects/ProjectDialog';
 export default function ProjectPage() {
   const params = useParams();
   const projectId = params.id as string;
-  const { projects, tasks, setQuickAddOpen, deleteProject } = useTodoStore();
+  const { projects, tasks, sections, setQuickAddOpen, deleteProject } = useTodoStore();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<'list' | 'sections'>('sections');
 
   const project = projects.find((p) => p.id === projectId);
   const projectTasks = tasks.filter((t) => t.projectId === projectId);
+  const projectSections = sections.filter((s) => s.projectId === projectId).sort((a, b) => a.order - b.order);
 
   if (!project) {
     notFound();
@@ -35,6 +38,10 @@ export default function ProjectPage() {
       window.location.href = '/';
     }
   };
+
+  // Check if project has sections or not
+  const hasSections = projectSections.length > 0;
+  const showSections = viewMode === 'sections' || hasSections;
 
   return (
     <div>
@@ -55,7 +62,8 @@ export default function ProjectPage() {
             <div>
               <h1 className="text-2xl font-bold">{project.name}</h1>
               <p className="text-sm text-muted-foreground">
-                {projectTasks.filter((t) => !t.isCompleted).length} tasks
+                {projectTasks.filter((t) => !t.isCompleted && !t.parentId).length} tasks
+                {projectSections.length > 0 && ` · ${projectSections.length} sections`}
               </p>
             </div>
           </div>
@@ -75,6 +83,10 @@ export default function ProjectPage() {
                   <DropdownMenuItem onClick={() => setEditDialogOpen(true)}>
                     <Pencil className="h-4 w-4 mr-2" />
                     Edit project
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setViewMode(viewMode === 'list' ? 'sections' : 'list')}>
+                    <LayoutList className="h-4 w-4 mr-2" />
+                    {viewMode === 'list' ? 'Show sections' : 'Simple list'}
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
@@ -97,7 +109,7 @@ export default function ProjectPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        {projectTasks.length === 0 ? (
+        {projectTasks.length === 0 && projectSections.length === 0 ? (
           <div className="text-center py-16">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
@@ -119,6 +131,12 @@ export default function ProjectPage() {
               Add task
             </Button>
           </div>
+        ) : showSections ? (
+          <SectionList
+            projectId={projectId}
+            sections={projectSections}
+            tasks={projectTasks}
+          />
         ) : (
           <TaskList tasks={projectTasks} projectId={projectId} />
         )}

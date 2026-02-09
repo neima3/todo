@@ -27,6 +27,9 @@ interface TodoStore {
   completeTask: (id: string) => void;
   uncompleteTask: (id: string) => void;
   reorderTasks: (projectId: string, taskIds: string[]) => void;
+  addSubtask: (parentId: string, content: string) => void;
+  toggleTaskExpanded: (id: string) => void;
+  getSubtasks: (parentId: string) => Task[];
 
   // Project Actions
   addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt' | 'order'>) => void;
@@ -168,6 +171,49 @@ export const useTodoStore = create<TodoStore>()(
             return newOrder >= 0 ? { ...task, order: newOrder } : task;
           }),
         });
+      },
+
+      addSubtask: (parentId, content) => {
+        const parent = get().tasks.find(t => t.id === parentId);
+        if (!parent) return;
+
+        const subtasks = get().tasks.filter(t => t.parentId === parentId);
+        const maxOrder = subtasks.length > 0 ? Math.max(...subtasks.map(t => t.order)) : -1;
+
+        const newTask: Task = {
+          id: genId(),
+          content,
+          projectId: parent.projectId,
+          sectionId: parent.sectionId,
+          parentId,
+          order: maxOrder + 1,
+          priority: 4,
+          labels: [],
+          isCompleted: false,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        set({ tasks: [...get().tasks, newTask] });
+        // Ensure parent is expanded
+        if (!parent.isExpanded) {
+          set({
+            tasks: get().tasks.map(t => t.id === parentId ? { ...t, isExpanded: true } : t)
+          });
+        }
+      },
+
+      toggleTaskExpanded: (id) => {
+        set({
+          tasks: get().tasks.map(t =>
+            t.id === id ? { ...t, isExpanded: !t.isExpanded } : t
+          ),
+        });
+      },
+
+      getSubtasks: (parentId) => {
+        return get().tasks
+          .filter(t => t.parentId === parentId)
+          .sort((a, b) => a.order - b.order);
       },
 
       // Project Actions

@@ -19,6 +19,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 
 interface QuickAddProps {
   open: boolean;
@@ -169,7 +170,7 @@ export function QuickAdd({ open, onOpenChange }: QuickAddProps) {
                 </PopoverContent>
               </Popover>
 
-              {/* Due date */}
+              {/* Due date with calendar */}
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -182,53 +183,16 @@ export function QuickAdd({ open, onOpenChange }: QuickAddProps) {
                     )}
                   >
                     <Calendar className="h-3.5 w-3.5" />
-                    {dueDate || 'Date'}
+                    {dueDate ? new Date(dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Date'}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent align="start" className="w-auto p-2">
-                  <div className="space-y-1">
-                    <button
-                      type="button"
-                      onClick={() => setDueDate(new Date().toISOString().split('T')[0])}
-                      className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-white/5"
-                    >
-                      Today
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const tomorrow = new Date();
-                        tomorrow.setDate(tomorrow.getDate() + 1);
-                        setDueDate(tomorrow.toISOString().split('T')[0]);
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-white/5"
-                    >
-                      Tomorrow
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const nextWeek = new Date();
-                        nextWeek.setDate(nextWeek.getDate() + 7);
-                        setDueDate(nextWeek.toISOString().split('T')[0]);
-                      }}
-                      className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-white/5"
-                    >
-                      Next week
-                    </button>
-                    {dueDate && (
-                      <>
-                        <div className="border-t border-white/5 my-1" />
-                        <button
-                          type="button"
-                          onClick={() => setDueDate(undefined)}
-                          className="w-full text-left px-3 py-2 text-sm rounded-md hover:bg-white/5 text-red-400"
-                        >
-                          Remove date
-                        </button>
-                      </>
-                    )}
-                  </div>
+                <PopoverContent align="start" className="w-[280px] p-0">
+                  <CalendarPicker
+                    selected={dueDate ? new Date(dueDate) : undefined}
+                    onSelect={(date) => {
+                      setDueDate(date ? date.toISOString().split('T')[0] : undefined);
+                    }}
+                  />
                 </PopoverContent>
               </Popover>
 
