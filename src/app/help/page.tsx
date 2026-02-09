@@ -19,7 +19,9 @@ import { PRIORITY_COLORS } from '@/types';
 
 const shortcuts = [
   { key: 'Q', description: 'Quick add a new task' },
-  { key: 'Cmd/Ctrl + K', description: 'Quick add (alternative)' },
+  { key: 'Cmd/Ctrl + K', description: 'Open command palette (search & navigate)' },
+  { key: '↑ / ↓', description: 'Navigate in command palette' },
+  { key: 'Enter', description: 'Select item in command palette' },
   { key: 'Escape', description: 'Close dialogs' },
 ];
 
