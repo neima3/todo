@@ -9,8 +9,16 @@ export function generateId(): string {
   return crypto.randomUUID();
 }
 
+export function parseLocalDate(date: Date | string): Date {
+  if (typeof date === 'string') {
+    const [year, month, day] = date.split('-').map(Number);
+    return new Date(year, month - 1, day);
+  }
+  return date;
+}
+
 export function formatDate(date: Date | string): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = parseLocalDate(date);
   return d.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -18,7 +26,7 @@ export function formatDate(date: Date | string): string {
 }
 
 export function formatDateFull(date: Date | string): string {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = parseLocalDate(date);
   return d.toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
@@ -28,7 +36,7 @@ export function formatDateFull(date: Date | string): string {
 }
 
 export function isToday(date: Date | string): boolean {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = parseLocalDate(date);
   const today = new Date();
   return (
     d.getDate() === today.getDate() &&
@@ -38,7 +46,7 @@ export function isToday(date: Date | string): boolean {
 }
 
 export function isTomorrow(date: Date | string): boolean {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = parseLocalDate(date);
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
   return (
@@ -49,18 +57,24 @@ export function isTomorrow(date: Date | string): boolean {
 }
 
 export function isOverdue(date: Date | string): boolean {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = parseLocalDate(date);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return d < today;
 }
 
 export function isThisWeek(date: Date | string): boolean {
-  const d = typeof date === 'string' ? new Date(date) : date;
+  const d = parseLocalDate(date);
   const today = new Date();
-  const weekEnd = new Date(today);
-  weekEnd.setDate(today.getDate() + (7 - today.getDay()));
-  return d >= today && d <= weekEnd;
+  // Reset today to start of day for accurate comparison
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  const weekEnd = new Date(todayStart);
+  weekEnd.setDate(todayStart.getDate() + (7 - todayStart.getDay()));
+  // Set to end of day
+  weekEnd.setHours(23, 59, 59, 999);
+
+  return d >= todayStart && d <= weekEnd;
 }
 
 export function getDueDateColor(date: string | undefined): string {

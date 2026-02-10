@@ -1,0 +1,45 @@
+[     793ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <_c className="flex-1 px-...">
+      <ScrollArea ref={null} className="relative o...">
+        <ScrollAreaProvider scope={undefined} type="hover" dir="ltr" scrollHideDelay={600} scrollArea={null} ...>
+          <Primitive.div dir="ltr" className="relative o..." ref={function} style={{position:"...", ...}}>
+            <div dir="ltr" className="relative o..." style={{position:"...", ...}} ref={function}>
+              <ScrollAreaViewport className="h-full w-f...">
+                <style>
+                <Primitive.div data-radix-scroll-area-viewport="" className="h-full w-f..." ref={function} style={{...}}>
+                  <div data-radix-scroll-area-viewport="" className="h-full w-f..." style={{...}} ref={function}>
+                    <div ref={function bound dispatchSetState} style={{minWidth:"...", ...}}>
+                      <nav className="space-y-1">
+                        <NavItem href="/" icon={<Inbox>} label="Inbox" count={1} isActive={true}>
+                          <LinkComponent href="/" className="group flex...">
+                            <a className="group flex..." ref={function} onClick={function onClick} ...>
+                              <span>
+                              <span>
++                             <span className="text-xs text-muted-foreground">
+                        ...
+                      ...
+              ...
+
+    at throwOnHydrationMismatch (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:3348:56)
+    at beginWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6775:918)
+    at runWithFiberInDEV (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:965:74)
+    at performUnitOfWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9562:97)
+    at workLoopConcurrentByScheduler (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9558:58)
+    at renderRootConcurrent (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9541:71)
+    at performWorkOnRoot (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9068:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:10230:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_4e009283._.js:2647:64)
+[    1088ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3022/icon-192.png:0
+[    1118ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3022/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3022/:0

@@ -52,8 +52,8 @@ function NavItem({ href, icon, label, count, isActive, color }: NavItemProps) {
       className={cn(
         'group flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
         isActive
-          ? 'bg-white/10 text-white'
-          : 'text-muted-foreground hover:bg-white/5 hover:text-white'
+          ? 'bg-primary/20 text-white shadow-sm ring-1 ring-primary/30'
+          : 'text-muted-foreground hover:bg-white/10 hover:text-white'
       )}
     >
       <span style={{ color: color || 'inherit' }}>{icon}</span>
@@ -122,26 +122,26 @@ export function Sidebar() {
             animate={{ width: 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2, ease: 'easeInOut' }}
-            className="fixed left-0 top-0 z-40 h-screen border-r border-white/5 bg-card/50 backdrop-blur-xl overflow-hidden"
+            className="fixed left-0 top-0 z-40 h-screen border-r border-white/10 bg-black/40 backdrop-blur-2xl overflow-hidden shadow-2xl"
           >
             <div className="flex h-full flex-col">
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/5">
+              <div className="flex items-center justify-between p-4 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <motion.div
                     whileHover={{ rotate: 180 }}
                     transition={{ duration: 0.3 }}
-                    className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center"
+                    className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center backdrop-blur-sm"
                   >
                     <span className="text-primary font-bold text-lg">T</span>
                   </motion.div>
-                  <span className="font-semibold text-lg">Todoist</span>
+                  <span className="font-semibold text-lg tracking-tight">Todoist</span>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon-sm"
                   onClick={toggleSidebar}
-                  className="text-muted-foreground hover:text-white"
+                  className="text-muted-foreground hover:text-white hover:bg-white/10"
                 >
                   <Menu className="h-4 w-4" />
                 </Button>
@@ -192,6 +192,7 @@ export function Sidebar() {
                         <button
                           onClick={() => setProjectDialogOpen(true)}
                           className="opacity-0 group-hover:opacity-100 hover:text-primary p-1 rounded"
+                          aria-label="Add project"
                         >
                           <Plus className="h-3 w-3" />
                         </button>
@@ -251,6 +252,7 @@ export function Sidebar() {
                         <button
                           onClick={() => setLabelDialogOpen(true)}
                           className="opacity-0 group-hover:opacity-100 hover:text-primary p-1 rounded"
+                          aria-label="Add label"
                         >
                           <Plus className="h-3 w-3" />
                         </button>
@@ -293,7 +295,7 @@ export function Sidebar() {
               </ScrollArea>
 
               {/* Footer */}
-              <div className="border-t border-white/5 p-2">
+              <div className="border-t border-white/10 p-2">
                 <div className="flex gap-1">
                   <ThemeToggle />
                   <DropdownMenu>

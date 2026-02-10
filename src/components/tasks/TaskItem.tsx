@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { triggerConfetti } from '@/lib/confetti';
 import {
   Calendar,
   Flag,
@@ -80,6 +81,7 @@ export function TaskItem({ task, showProject = false, isSubtask = false, isSelec
     setIsCompleting(true);
     setTimeout(() => {
       completeTask(task.id);
+      triggerConfetti();
       const msg = task.recurrence
         ? `"${task.content}" completed — next occurrence created`
         : `"${task.content}" completed`;

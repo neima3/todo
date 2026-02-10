@@ -4,32 +4,32 @@ import { ParsedTask, Priority, Recurrence } from '@/types';
 // Supports: dates, priorities, projects (#), labels (@)
 
 const DATE_PATTERNS: Record<string, () => Date> = {
-  today: () => new Date(),
-  tomorrow: () => {
+  'tomorrow': () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
     return d;
   },
-  tod: () => new Date(),
-  tom: () => {
+  'today': () => new Date(),
+  'tod': () => new Date(),
+  'tom': () => {
     const d = new Date();
     d.setDate(d.getDate() + 1);
     return d;
   },
-  monday: () => getNextDayOfWeek(1),
-  tuesday: () => getNextDayOfWeek(2),
-  wednesday: () => getNextDayOfWeek(3),
-  thursday: () => getNextDayOfWeek(4),
-  friday: () => getNextDayOfWeek(5),
-  saturday: () => getNextDayOfWeek(6),
-  sunday: () => getNextDayOfWeek(0),
-  mon: () => getNextDayOfWeek(1),
-  tue: () => getNextDayOfWeek(2),
-  wed: () => getNextDayOfWeek(3),
-  thu: () => getNextDayOfWeek(4),
-  fri: () => getNextDayOfWeek(5),
-  sat: () => getNextDayOfWeek(6),
-  sun: () => getNextDayOfWeek(0),
+  'monday': () => getNextDayOfWeek(1),
+  'tuesday': () => getNextDayOfWeek(2),
+  'wednesday': () => getNextDayOfWeek(3),
+  'thursday': () => getNextDayOfWeek(4),
+  'friday': () => getNextDayOfWeek(5),
+  'saturday': () => getNextDayOfWeek(6),
+  'sunday': () => getNextDayOfWeek(0),
+  'mon': () => getNextDayOfWeek(1),
+  'tue': () => getNextDayOfWeek(2),
+  'wed': () => getNextDayOfWeek(3),
+  'thu': () => getNextDayOfWeek(4),
+  'fri': () => getNextDayOfWeek(5),
+  'sat': () => getNextDayOfWeek(6),
+  'sun': () => getNextDayOfWeek(0),
   'next week': () => {
     const d = new Date();
     d.setDate(d.getDate() + 7);
@@ -278,10 +278,13 @@ export function parseTaskInput(input: string): ParsedTask {
   // Extract date patterns (only if no recurrence already set a date)
   const lowerContent = content.toLowerCase();
   for (const [pattern, getDate] of Object.entries(DATE_PATTERNS)) {
-    if (lowerContent.includes(pattern)) {
+    // Use regex with word boundaries to avoid matching inside other words
+    // And ensure it's not followed by an apostrophe (to avoid replacing "Today" in "Today's")
+    const regex = new RegExp(`\\b${pattern}\\b(?!['\u2019])`, 'i');
+    if (regex.test(content)) {
       const date = getDate();
       dueDate = date.toISOString().split('T')[0];
-      content = content.replace(new RegExp(pattern, 'gi'), '').trim();
+      content = content.replace(regex, '').trim();
       break;
     }
   }

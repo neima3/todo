@@ -190,11 +190,11 @@ export const useTodoStore = create<TodoStore>()(
           const newTasks = get().tasks.map((t) =>
             t.id === id
               ? {
-                  ...t,
-                  isCompleted: true,
-                  completedAt: new Date().toISOString(),
-                  updatedAt: new Date().toISOString()
-                }
+                ...t,
+                isCompleted: true,
+                completedAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+              }
               : t
           );
 
@@ -226,11 +226,11 @@ export const useTodoStore = create<TodoStore>()(
           tasks: get().tasks.map((task) =>
             task.id === id
               ? {
-                  ...task,
-                  isCompleted: false,
-                  completedAt: undefined,
-                  updatedAt: new Date().toISOString()
-                }
+                ...task,
+                isCompleted: false,
+                completedAt: undefined,
+                updatedAt: new Date().toISOString()
+              }
               : task
           ),
         });
@@ -384,9 +384,9 @@ export const useTodoStore = create<TodoStore>()(
           // Update tasks if label name changed
           tasks: oldLabel && updates.name && oldLabel.name !== updates.name
             ? get().tasks.map((task) => ({
-                ...task,
-                labels: task.labels.map(l => l === oldLabel.name ? updates.name! : l)
-              }))
+              ...task,
+              labels: task.labels.map(l => l === oldLabel.name ? updates.name! : l)
+            }))
             : get().tasks,
         });
       },
@@ -397,9 +397,9 @@ export const useTodoStore = create<TodoStore>()(
           labels: get().labels.filter((l) => l.id !== id),
           tasks: label
             ? get().tasks.map((task) => ({
-                ...task,
-                labels: task.labels.filter(l => l !== label.name)
-              }))
+              ...task,
+              labels: task.labels.filter(l => l !== label.name)
+            }))
             : get().tasks,
         });
       },
@@ -427,20 +427,28 @@ export const useTodoStore = create<TodoStore>()(
       },
 
       getTodayTasks: () => {
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+
         return get().tasks
-          .filter((task) => task.dueDate === today && !task.isCompleted)
+          .filter((task) => task.dueDate === todayStr && !task.isCompleted)
           .sort((a, b) => a.priority - b.priority);
       },
 
       getUpcomingTasks: () => {
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+
         return get().tasks
           .filter((task) => {
             if (!task.dueDate || task.isCompleted) return false;
-            const dueDate = new Date(task.dueDate);
-            return dueDate > today;
+            return task.dueDate > todayStr;
           })
           .sort((a, b) => {
             const dateA = new Date(a.dueDate!);
@@ -457,12 +465,15 @@ export const useTodoStore = create<TodoStore>()(
 
       getOverdueTasks: () => {
         const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${year}-${month}-${day}`;
+
         return get().tasks
           .filter((task) => {
             if (!task.dueDate || task.isCompleted) return false;
-            const dueDate = new Date(task.dueDate);
-            return dueDate < today;
+            return task.dueDate < todayStr;
           })
           .sort((a, b) => {
             const dateA = new Date(a.dueDate!);

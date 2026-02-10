@@ -1,0 +1,265 @@
+[    6784ms] [ERROR] `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:3127
+[    6785ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[    6793ms] [ERROR] `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:3127
+[    6793ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[   64671ms] [ERROR] `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:3127
+[   64671ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[   64673ms] [ERROR] `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:3127
+[   64673ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[   73398ms] [ERROR] `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:3127
+[   73399ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[   73401ms] [ERROR] `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:3127
+[   73401ms] [WARNING] Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}. @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[  214701ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <_c className="flex-1 px-...">
+      <ScrollArea ref={null} className="relative o...">
+        <ScrollAreaProvider scope={undefined} type="hover" dir="ltr" scrollHideDelay={600} scrollArea={null} ...>
+          <Primitive.div dir="ltr" className="relative o..." ref={function} style={{position:"...", ...}}>
+            <div dir="ltr" className="relative o..." style={{position:"...", ...}} ref={function}>
+              <ScrollAreaViewport className="h-full w-f...">
+                <style>
+                <Primitive.div data-radix-scroll-area-viewport="" className="h-full w-f..." ref={function} style={{...}}>
+                  <div data-radix-scroll-area-viewport="" className="h-full w-f..." style={{...}} ref={function}>
+                    <div ref={function bound dispatchSetState} style={{minWidth:"...", ...}}>
+                      <nav className="space-y-1">
+                        <NavItem href="/" icon={<Inbox>} label="Inbox" count={1} isActive={false}>
+                          <LinkComponent href="/" className="group flex...">
+                            <a className="group flex..." ref={function} onClick={function onClick} ...>
+                              <span>
+                              <span>
++                             <span className="text-xs text-muted-foreground">
+                        ...
+                      ...
+              ...
+
+    at throwOnHydrationMismatch (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:3348:56)
+    at beginWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6775:918)
+    at runWithFiberInDEV (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:965:74)
+    at performUnitOfWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9562:97)
+    at workLoopConcurrentByScheduler (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9558:58)
+    at renderRootConcurrent (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9541:71)
+    at performWorkOnRoot (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9068:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:10230:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_4e009283._.js:2647:64)
+[  215412ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3022/manifest.json:0
+[  215435ms] [ERROR] Manifest fetch from http://localhost:3022/manifest.json failed, code 404 @ http://localhost:3022/upcoming:0
+[  282668ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <_c className="flex-1 px-...">
+      <ScrollArea ref={null} className="relative o...">
+        <ScrollAreaProvider scope={undefined} type="hover" dir="ltr" scrollHideDelay={600} scrollArea={null} ...>
+          <Primitive.div dir="ltr" className="relative o..." ref={function} style={{position:"...", ...}}>
+            <div dir="ltr" className="relative o..." style={{position:"...", ...}} ref={function}>
+              <ScrollAreaViewport className="h-full w-f...">
+                <style>
+                <Primitive.div data-radix-scroll-area-viewport="" className="h-full w-f..." ref={function} style={{...}}>
+                  <div data-radix-scroll-area-viewport="" className="h-full w-f..." style={{...}} ref={function}>
+                    <div ref={function bound dispatchSetState} style={{minWidth:"...", ...}}>
+                      <nav className="space-y-1">
+                        <NavItem href="/" icon={<Inbox>} label="Inbox" count={1} isActive={false}>
+                          <LinkComponent href="/" className="group flex...">
+                            <a className="group flex..." ref={function} onClick={function onClick} ...>
+                              <span>
+                              <span>
++                             <span className="text-xs text-muted-foreground">
+                        ...
+                      ...
+              ...
+
+    at throwOnHydrationMismatch (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:3348:56)
+    at beginWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6775:918)
+    at runWithFiberInDEV (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:965:74)
+    at performUnitOfWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9562:97)
+    at workLoopConcurrentByScheduler (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9558:58)
+    at renderRootConcurrent (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9541:71)
+    at performWorkOnRoot (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9068:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:10230:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_4e009283._.js:2647:64)
+[  288903ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3022/icon-192.png:0
+[  290379ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3022/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3022/upcoming:0
+[  298486ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3022/icon-192.png:0
+[  308800ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3022/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3022/upcoming:0
+[  308963ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3022/upcoming:0
+[  316700ms] Error: useTheme must be used within ThemeProvider
+    at useTheme (http://localhost:3022/_next/static/chunks/Desktop_Apps_todo_src_31d9a687._.js:1756:15)
+    at ThemeToggle (http://localhost:3022/_next/static/chunks/Desktop_Apps_todo_src_31d9a687._.js:1791:227)
+    at Object.react_stack_bottom_frame (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:14826:24)
+    at renderWithHooks (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:4651:24)
+    at updateFunctionComponent (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6112:21)
+    at beginWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6708:24)
+    at runWithFiberInDEV (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:965:74)
+    at performUnitOfWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9562:97)
+    at workLoopSync (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9456:40)
+    at renderRootSync (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9440:13)
+    at performWorkOnRoot (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9105:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:10230:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_4e009283._.js:2647:64)
+[  321265ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[  325070ms] [WARNING] The resource http://localhost:3022/_next/static/chunks/%5Broot-of-the-server%5D__73db4a63._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3022/upcoming:0
+[  328828ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3022/upcoming:0
+[  332488ms] Error: useTheme must be used within ThemeProvider
+    at useTheme (http://localhost:3022/_next/static/chunks/Desktop_Apps_todo_src_31d9a687._.js:1756:15)
+    at ThemeToggle (http://localhost:3022/_next/static/chunks/Desktop_Apps_todo_src_31d9a687._.js:1791:227)
+    at Object.react_stack_bottom_frame (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:14826:24)
+    at renderWithHooks (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:4651:24)
+    at updateFunctionComponent (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6112:21)
+    at beginWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6708:24)
+    at runWithFiberInDEV (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:965:74)
+    at performUnitOfWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9562:97)
+    at workLoopSync (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9456:40)
+    at renderRootSync (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9440:13)
+    at performWorkOnRoot (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9105:47)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:10230:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_4e009283._.js:2647:64)
+[  335639ms] [WARNING] The resource http://localhost:3022/_next/static/chunks/%5Broot-of-the-server%5D__73db4a63._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3022/upcoming:0
+[  360104ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[  363336ms] [WARNING] The resource http://localhost:3022/_next/static/chunks/%5Broot-of-the-server%5D__73db4a63._.css was preloaded using link preload but not used within a few seconds from the window's load event. Please make sure it has an appropriate `as` value and it is preloaded intentionally. @ http://localhost:3022/upcoming:0
+[  366691ms] [WARNING] [Fast Refresh] performing full reload because your application had an unrecoverable error @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[  374244ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <_c className="flex-1 px-...">
+      <ScrollArea ref={null} className="relative o...">
+        <ScrollAreaProvider scope={undefined} type="hover" dir="ltr" scrollHideDelay={600} scrollArea={null} ...>
+          <Primitive.div dir="ltr" className="relative o..." ref={function} style={{position:"...", ...}}>
+            <div dir="ltr" className="relative o..." style={{position:"...", ...}} ref={function}>
+              <ScrollAreaViewport className="h-full w-f...">
+                <style>
+                <Primitive.div data-radix-scroll-area-viewport="" className="h-full w-f..." ref={function} style={{...}}>
+                  <div data-radix-scroll-area-viewport="" className="h-full w-f..." style={{...}} ref={function}>
+                    <div ref={function bound dispatchSetState} style={{minWidth:"...", ...}}>
+                      <nav className="space-y-1">
+                        <NavItem href="/" icon={<Inbox>} label="Inbox" count={1} isActive={false}>
+                          <LinkComponent href="/" className="group flex...">
+                            <a className="group flex..." ref={function} onClick={function onClick} ...>
+                              <span>
+                              <span>
++                             <span className="text-xs text-muted-foreground">
+                        ...
+                      ...
+              ...
+
+    at throwOnHydrationMismatch (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:3348:56)
+    at beginWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6775:918)
+    at runWithFiberInDEV (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:965:74)
+    at performUnitOfWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9562:97)
+    at workLoopConcurrentByScheduler (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9558:58)
+    at renderRootConcurrent (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9541:71)
+    at performWorkOnRoot (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9068:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:10230:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_4e009283._.js:2647:64)
+[  375230ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3022/icon-192.png:0
+[  375268ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3022/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3022/upcoming:0
+[  376169ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3022/icon-192.png:0
+[  376187ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3022/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3022/upcoming:0
+[  384799ms] [WARNING] [HMR] Invalid message: {"isTrusted":true}
+TypeError: Cannot convert undefined or null to object
+    at Object.keys (<anonymous>)
+    at extractModulesFromTurbopackMessage (http://localhost:3022/_next/static/chunks/186b7_next_dist_client_e3d90e34._.js:11210:39)
+    at TurbopackHmr.onTurbopackMessage (http://localhost:3022/_next/static/chunks/186b7_next_dist_client_e3d90e34._.js:11157:32)
+    at processMessage (http://localhost:3022/_next/static/chunks/186b7_next_dist_client_e3d90e34._.js:11589:30)
+    at WebSocket.handleMessage (http://localhost:3022/_next/static/chunks/186b7_next_dist_client_e3d90e34._.js:10914:52) @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:2297
+[  389511ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <_c className="flex-1 px-...">
+      <ScrollArea ref={null} className="relative o...">
+        <ScrollAreaProvider scope={undefined} type="hover" dir="ltr" scrollHideDelay={600} scrollArea={null} ...>
+          <Primitive.div dir="ltr" className="relative o..." ref={function} style={{position:"...", ...}}>
+            <div dir="ltr" className="relative o..." style={{position:"...", ...}} ref={function}>
+              <ScrollAreaViewport className="h-full w-f...">
+                <style>
+                <Primitive.div data-radix-scroll-area-viewport="" className="h-full w-f..." ref={function} style={{...}}>
+                  <div data-radix-scroll-area-viewport="" className="h-full w-f..." style={{...}} ref={function}>
+                    <div ref={function bound dispatchSetState} style={{minWidth:"...", ...}}>
+                      <nav className="space-y-1">
+                        <NavItem href="/" icon={<Inbox>} label="Inbox" count={1} isActive={false}>
+                          <LinkComponent href="/" className="group flex...">
+                            <a className="group flex..." ref={function} onClick={function onClick} ...>
+                              <span>
+                              <span>
++                             <span className="text-xs text-muted-foreground">
+                        ...
+                      ...
+              ...
+
+    at throwOnHydrationMismatch (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:3348:56)
+    at beginWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6775:918)
+    at runWithFiberInDEV (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:965:74)
+    at performUnitOfWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9562:97)
+    at workLoopConcurrentByScheduler (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9558:58)
+    at renderRootConcurrent (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9541:71)
+    at performWorkOnRoot (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9068:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:10230:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_4e009283._.js:2647:64)
+[  390927ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3022/icon-192.png:0
+[  391408ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3022/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3022/upcoming:0
+[  391977ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:3022/icon-192.png:0
+[  391986ms] [WARNING] Error while trying to use the following icon from the Manifest: http://localhost:3022/icon-192.png (Download error or resource isn't a valid image) @ http://localhost:3022/upcoming:0

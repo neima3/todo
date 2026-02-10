@@ -1,0 +1,69 @@
+[    8124ms] [ERROR] In HTML, %s cannot be a descendant of <%s>.
+This will cause a hydration error.%s <button> button 
+
+  ...
+    <motion.aside initial={{width:0,opacity:0}} animate={{width:280, ...}} exit={{width:0,opacity:0}} ...>
+      <aside className="fixed left..." style={{width:"0px", ...}} ref={function useMotionRef.useCallback}>
+        <div className="flex h-ful...">
+          <div>
+          <_c className="flex-1 px-...">
+            <ScrollArea ref={null} className="relative o...">
+              <ScrollAreaProvider scope={undefined} type="hover" dir="ltr" scrollHideDelay={600} scrollArea={null} ...>
+                <Primitive.div dir="ltr" className="relative o..." ref={function} style={{position:"...", ...}}>
+                  <div dir="ltr" className="relative o..." style={{position:"...", ...}} ref={function}>
+                    <ScrollAreaViewport className="h-full w-f...">
+                      <style>
+                      <Primitive.div data-radix-scroll-area-viewport="" className="h-full w-f..." ref={function} ...>
+                        <div data-radix-scroll-area-viewport="" className="h-full w-f..." style={{...}} ref={function}>
+                          <div ref={function bound dispatchSetState} style={{minWidth:"...", ...}}>
+                            <nav>
+                            <div className="mt-6">
+>                             <button
+>                               onClick={function onClick}
+>                               className="flex w-full items-center gap-2 px-3 py-2 text-xs font-semibold uppercase tr..."
+>                             >
+                                <ChevronDown>
+                                <span>
+                                ...
+                                  <Primitive.button aria-describedby={undefined} data-state="closed" asChild={true} ...>
+                                    <Primitive.button.Slot aria-describedby={undefined} data-state="closed" ...>
+                                      <Primitive.button.SlotClone aria-describedby={undefined} data-state="closed" ...>
+>                                       <button
+>                                         onClick={function}
+>                                         className="opacity-0 group-hover:opacity-100 hover:text-primary p-1 rounded"
+>                                         aria-describedby={undefined}
+>                                         data-state="closed"
+>                                         onPointerMove={function handleEvent}
+>                                         onPointerLeave={function handleEvent}
+>                                         onPointerDown={function handleEvent}
+>                                         onFocus={function handleEvent}
+>                                         onBlur={function handleEvent}
+>                                         ref={function}
+>                                       >
+                              ...
+                            ...
+                    ...
+          ...
+ @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:3127
+[    8125ms] [ERROR] <%s> cannot contain a nested %s.
+See this log for the ancestor stack trace. button <button> @ http://localhost:3022/_next/static/chunks/186b7_next_dist_00223783._.js:3127
+[    8934ms] Error: Hydration failed because the server rendered HTML didn't match the client. As a result this tree will be regenerated on the client. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+    at throwOnHydrationMismatch (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:3348:56)
+    at beginWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:6775:918)
+    at runWithFiberInDEV (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:965:74)
+    at performUnitOfWork (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9562:97)
+    at workLoopConcurrentByScheduler (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9558:58)
+    at renderRootConcurrent (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9541:71)
+    at performWorkOnRoot (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:9068:150)
+    at performWorkOnRootViaSchedulerTask (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_react-dom_f7498716._.js:10230:9)
+    at MessagePort.performWorkUntilDeadline (http://localhost:3022/_next/static/chunks/186b7_next_dist_compiled_4e009283._.js:2647:64)
